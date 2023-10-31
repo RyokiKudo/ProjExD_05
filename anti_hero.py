@@ -8,6 +8,8 @@ import pygame as pg
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
 
+#enemy_y_list = [100 + i * 200 for i in range(4)]
+
 def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
     """
     オブジェクトが画面内か画面外かを判定し，真理値タプルを返す
@@ -21,7 +23,7 @@ def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
         tate = False
     return yoko, tate
 
-class Maou(pg.sprite.Sprite):
+class Maou():
     def __init__(self):
         self.image = pg.transform.rotozoom(pg.image.load("fig/maou1.png"), 0, 0.5)
         self.rect = self.image.get_rect()
@@ -39,13 +41,17 @@ class Maou(pg.sprite.Sprite):
         bg_obj.blit(self.image, self.rect)
 
 class Zako(pg.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, y: int, speed: int):
+        super().__init__()
         self.image = pg.transform.rotozoom(pg.image.load("fig/zako1.png"), 0, 0.5)
         self.rect = self.image.get_rect()
-        self.rect.center = (100, 450)
+        self.rect.center = (100, y)
+        self.speed = speed
 
-    def update(self, bg_obj):
-        bg_obj.blit(self.image, self.rect)
+    def update(self):
+        self.rect.move_ip(self.speed, 0)
+        if self.rect.right >= 1400:
+            self.rect.right = 1400
         
 
 def main():
@@ -54,7 +60,7 @@ def main():
     bg_img = pg.transform.rotozoom(pg.image.load("fig/back.png"), 0, 5)
     
     maou = Maou()
-    zako = Zako()
+    enemys = pg.sprite.Group()
     
     tmr = 0
     clock = pg.time.Clock()
@@ -63,10 +69,13 @@ def main():
             if event.type == pg.QUIT:
                 return 0
         key_lst = pg.key.get_pressed()
+        if tmr % 50 == 0:
+            enemys.add(Zako(random.randint(100, 800), random.randint(5, 15)))
 
         screen.blit(bg_img, (0, 0))
         maou.update(key_lst, screen)
-        zako.update(screen)
+        enemys.update()
+        enemys.draw(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
