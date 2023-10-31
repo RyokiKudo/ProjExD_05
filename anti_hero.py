@@ -27,14 +27,14 @@ class Maou():
         self.rect.center = (1500, 450)
 
     def update(self, key_list, bg_obj: pg.Surface):
-        move_val = 0
+        move_val = 0    #魔王の移動値
         if key_list[pg.K_UP]:
             move_val += -1
         if key_list[pg.K_DOWN]:
             move_val += 1
-        self.rect.move_ip(0, move_val * 10)
+        self.rect.move_ip(0, move_val * 10) #魔王を移動
         if not check_bound(self.rect)[1]:
-            self.rect.move_ip(0 ,-move_val * 10)
+            self.rect.move_ip(0 ,-move_val * 10)    #画面から出たら移動を戻す
         bg_obj.blit(self.image, self.rect)
 
         
@@ -43,13 +43,13 @@ class Zako(pg.sprite.Sprite):
         super().__init__()
         self.image = pg.transform.rotozoom(pg.image.load("fig/zako1.png"), 0, 0.5)
         self.rect = self.image.get_rect()
-        self.rect.center = (100, y)
-        self.speed = speed
+        self.rect.center = (100, y) #出現位置のランダム化
+        self.speed = speed  #移動速度をランダム化
 
     def update(self):
-        self.rect.move_ip(self.speed, 0)
-        if self.rect.right >= 1400:
-            self.rect.right = 1400
+        self.rect.move_ip(self.speed, 0)    #敵キャラの移動
+        if self.rect.right >= 1400: #敵キャラが一定位置を超えたら戻す
+            self.rect.right = 1400 
 
 class Beam(pg.sprite.Sprite):
     """
