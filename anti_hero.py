@@ -24,7 +24,7 @@ def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
 class Maou(pg.sprite.Sprite):
     def __init__(self):
         
-        self.image = pg.transform.rotozoom(pg.image.load(f"fig/maou1.png"), 0, 0)
+        self.image = pg.transform.rotozoom(pg.image.load("fig/maou1.png"), 0, 1)
         
     def update(self, bg_obj):
         bg_obj.blit(self.image, (1500,450))
@@ -32,7 +32,7 @@ class Maou(pg.sprite.Sprite):
 class Zako(pg.sprite.Sprite):
     def __init__(self):
         
-        self.image = pg.transform.rotozoom(pg.image.load(f"fig/zako1.png"), 0, 0)
+        self.image = pg.transform.rotozoom(pg.image.load("fig/zako1.png"), 0, 0.5)
         
     def update(self, bg_obj):
         bg_obj.blit(self.image, (100,450))
@@ -41,7 +41,7 @@ class Zako(pg.sprite.Sprite):
 def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    bg_img = pg.image.load("fig/back.png")
+    bg_img = pg.transform.rotozoom(pg.image.load("fig/back.png"), 0, 5)
     screen.blit(bg_img, (0, 0))
     
     maou = Maou()
