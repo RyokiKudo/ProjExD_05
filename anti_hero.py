@@ -19,7 +19,25 @@ def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
     if obj.top < 0 or HEIGHT < obj.bottom:  # 縦方向のはみ出し判定
         tate = False
     return yoko, tate
+        
+class Maou():
+    def __init__(self):
+        self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/maou1.png"), 0, 0.5)
+        self.rect = self.image.get_rect()
+        self.rect.center = (1500, 450)
 
+    def update(self, key_list, bg_obj: pg.Surface):
+        move_val = 0
+        if key_list[pg.K_UP]:
+            move_val += -1
+        if key_list[pg.K_DOWN]:
+            move_val += 1
+        self.rect.move_ip(0, move_val * 10)
+        if not check_bound(self.rect)[1]:
+            self.rect.move_ip(0 ,-move_val * 10)
+        bg_obj.blit(self.image, self.rect)
+        
+        
 class Beam(pg.sprite.Sprite):
     """
         魔王が出すビームに関するクラス
@@ -38,29 +56,10 @@ class Beam(pg.sprite.Sprite):
             self.kill()
         # screen.blit(self.img, self.rect)
         
-        
-class Maou():
-    def __init__(self):
-        self.image = pg.transform.rotozoom(pg.image.load("fig/maou1.png"), 0, 0.5)
-        self.rect = self.image.get_rect()
-        self.rect.center = (1500, 450)
-
-    def update(self, key_list, bg_obj: pg.Surface):
-        move_val = 0
-        if key_list[pg.K_UP]:
-            move_val += -1
-        if key_list[pg.K_DOWN]:
-            move_val += 1
-        self.rect.move_ip(0, move_val * 10)
-        if not check_bound(self.rect)[1]:
-            self.rect.move_ip(0 ,-move_val * 10)
-        bg_obj.blit(self.image, self.rect)
-
-        
 class Zako(pg.sprite.Sprite):
     def __init__(self, y: int, speed: int):
         super().__init__()
-        self.image = pg.transform.rotozoom(pg.image.load("fig/zako1.png"), 0, 0.5)
+        self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/zako1.png"), 0, 0.5)
         self.rect = self.image.get_rect()
         self.rect.center = (100, y)
         self.speed = speed
