@@ -27,7 +27,15 @@ class Maou(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (1500, 450)
 
-    def update(self, bg_obj):
+    def update(self, key_list, bg_obj: pg.Surface):
+        move_val = 0
+        if key_list[pg.K_UP]:
+            move_val += -1
+        if key_list[pg.K_DOWN]:
+            move_val += 1
+        self.rect.move_ip(0, move_val * 10)
+        if not check_bound(self.rect)[1]:
+            self.rect.move_ip(0 ,-move_val * 10)
         bg_obj.blit(self.image, self.rect)
 
 class Zako(pg.sprite.Sprite):
@@ -44,7 +52,6 @@ def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.transform.rotozoom(pg.image.load("fig/back.png"), 0, 5)
-    screen.blit(bg_img, (0, 0))
     
     maou = Maou()
     zako = Zako()
@@ -55,7 +62,10 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return 0
-        maou.update(screen)
+        key_lst = pg.key.get_pressed()
+
+        screen.blit(bg_img, (0, 0))
+        maou.update(key_lst, screen)
         zako.update(screen)
         pg.display.update()
         tmr += 1
