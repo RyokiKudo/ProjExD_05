@@ -19,25 +19,6 @@ def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
     if obj.top < 0 or HEIGHT < obj.bottom:  # 縦方向のはみ出し判定
         tate = False
     return yoko, tate
-
-class Beam(pg.sprite.Sprite):
-    """
-        魔王が出すビームに関するクラス
-    """
-    def __init__(self, maou: Maou):
-        super().__init__()
-        self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/beam.png"),0,0.5)
-        self.rect = self.image.get_rect()
-        self.rect.left = maou.rect.left  
-        self.rect.centery = maou.rect.centery 
-        self.vx, self.vy = -10, 0
-
-    def update(self): 
-        self.rect.move_ip(self.vx, self.vy)
-        if check_bound(self.rect) != (True, True):
-            self.kill()
-        # screen.blit(self.img, self.rect)
-        
         
 class Maou():
     def __init__(self):
@@ -69,6 +50,24 @@ class Zako(pg.sprite.Sprite):
         self.rect.move_ip(self.speed, 0)
         if self.rect.right >= 1400:
             self.rect.right = 1400
+
+class Beam(pg.sprite.Sprite):
+    """
+        魔王が出すビームに関するクラス
+    """
+    def __init__(self, maou: Maou):
+        super().__init__()
+        self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/beam.png"),0,0.5)
+        self.rect = self.image.get_rect()
+        self.rect.left = maou.rect.left  
+        self.rect.centery = maou.rect.centery
+        self.vx, self.vy = -10, 0
+
+    def update(self): 
+        self.rect.move_ip(self.vx, self.vy)
+        if check_bound(self.rect) != (True, True):
+            self.kill()
+        # screen.blit(self.img, self.rect)
 
 def main():
     pg.display.set_caption("アンチヒーロー")
