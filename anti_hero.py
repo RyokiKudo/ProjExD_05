@@ -18,8 +18,10 @@ def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
         tate = False
     return yoko, tate
 
+
+
 class Maou(pg.sprite.Sprite):
-    """
+    """ 
     魔王
     """
     def __init__(self):
@@ -43,6 +45,7 @@ class Zako(pg.sprite.Sprite):
     def update(self, bg_obj):
         bg_obj.blit(self.image, self.rect)        
 
+
 class Beam(pg.sprite.Sprite):
     """
         魔王が出すビームに関するクラス
@@ -59,7 +62,6 @@ class Beam(pg.sprite.Sprite):
         self.rect.move_ip(self.vx, self.vy)
         if check_bound(self.rect) != (True, True):
             self.kill()
-        # screen.blit(self.img, self.rect)
 
 
 def main():
