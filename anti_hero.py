@@ -4,6 +4,7 @@ import sys
 import time
 
 import pygame as pg
+from pygame.sprite import AbstractGroup
 
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
@@ -11,11 +12,7 @@ HEIGHT = 900  # ゲームウィンドウの高さ
 #enemy_y_list = [100 + i * 200 for i in range(4)]
 
 def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
-    """
-    オブジェクトが画面内か画面外かを判定し，真理値タプルを返す
-    引数 obj：オブジェクト（爆弾，こうかとん，ビーム）SurfaceのRect
-    戻り値：横方向，縦方向のはみ出し判定結果（画面内：True／画面外：False）
-    """
+    
     yoko, tate = True, True
     if obj.left < 0 or WIDTH < obj.right:  # 横方向のはみ出し判定
         yoko = False
@@ -23,6 +20,25 @@ def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
         tate = False
     return yoko, tate
 
+class Beam(pg.sprite.Sprite):
+    """
+        魔王が出すビームに関するクラス
+    """
+    def __init__(self, maou: Maou):
+        super().__init__()
+        self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/beam.png"),0,0.5)
+        self.rect = self.image.get_rect()
+        self.rect.left = maou.rect.left  
+        self.rect.centery = maou.rect.centery 
+        self.vx, self.vy = -10, 0
+
+    def update(self): 
+        self.rect.move_ip(self.vx, self.vy)
+        if check_bound(self.rect) != (True, True):
+            self.kill()
+        # screen.blit(self.img, self.rect)
+        
+        
 class Maou():
     def __init__(self):
         self.image = pg.transform.rotozoom(pg.image.load("fig/maou1.png"), 0, 0.5)
@@ -40,6 +56,7 @@ class Maou():
             self.rect.move_ip(0 ,-move_val * 10)
         bg_obj.blit(self.image, self.rect)
 
+        
 class Zako(pg.sprite.Sprite):
     def __init__(self, y: int, speed: int):
         super().__init__()
@@ -52,14 +69,14 @@ class Zako(pg.sprite.Sprite):
         self.rect.move_ip(self.speed, 0)
         if self.rect.right >= 1400:
             self.rect.right = 1400
-        
 
 def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    bg_img = pg.transform.rotozoom(pg.image.load("fig/back.png"), 0, 5)
-    
+
+    bg_img = pg.transform.rotozoom(pg.image.load("ex05/fig/back.png"), 0, 5)
     maou = Maou()
+    beams = pg.sprite.Group()
     enemys = pg.sprite.Group()
     
     tmr = 0
@@ -68,14 +85,18 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return 0
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                beams.add(Beam(maou))
+        screen.blit(bg_img, (0, 0))
+        beams.update() 
+        beams.draw(screen)
         key_lst = pg.key.get_pressed()
         if tmr % 50 == 0:
             enemys.add(Zako(random.randint(100, 800), random.randint(5, 15)))
-
-        screen.blit(bg_img, (0, 0))
         maou.update(key_lst, screen)
         enemys.update()
         enemys.draw(screen)
+
         pg.display.update()
         tmr += 1
         clock.tick(50)
