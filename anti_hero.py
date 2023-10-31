@@ -9,6 +9,8 @@ from pygame.sprite import AbstractGroup
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
 
+#enemy_y_list = [100 + i * 200 for i in range(4)]
+
 def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
     
     yoko, tate = True, True
@@ -67,10 +69,12 @@ class Beam(pg.sprite.Sprite):
 def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
+
     bg_img = pg.transform.rotozoom(pg.image.load("ex05/fig/back.png"), 0, 5)
     maou = Maou()
-    zako = Zako()
     beams = pg.sprite.Group()
+    enemys = pg.sprite.Group()
+    
     tmr = 0
     clock = pg.time.Clock()
     while True:
@@ -79,12 +83,16 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(maou))
-        
         screen.blit(bg_img, (0, 0))
-        maou.update(screen)
-        zako.update(screen)
         beams.update() 
         beams.draw(screen)
+        key_lst = pg.key.get_pressed()
+        if tmr % 50 == 0:
+            enemys.add(Zako(random.randint(100, 800), random.randint(5, 15)))
+        maou.update(key_lst, screen)
+        enemys.update()
+        enemys.draw(screen)
+
         pg.display.update()
         tmr += 1
         clock.tick(50)
