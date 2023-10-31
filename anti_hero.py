@@ -70,6 +70,11 @@ class Zako(pg.sprite.Sprite):
         if self.rect.right >= 1400:
             self.rect.right = 1400
 
+class Bomb():
+    def __init__(self):
+        self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/explosion.gif"),0,0.5)
+        #self.rect = self.image.
+        
 def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
