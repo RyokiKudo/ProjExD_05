@@ -9,12 +9,11 @@ from pygame.sprite import AbstractGroup
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
 
-#enemy_y_list = [100 + i * 200 for i in range(4)]
 
 def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
     
     yoko, tate = True, True
-    if obj.left < 0 or WIDTH < obj.right:  # 横方向のはみ出し判定
+    if obj.left < 0 :  # 横方向のはみ出し判定
         yoko = False
     if obj.top < 0 or HEIGHT < obj.bottom:  # 縦方向のはみ出し判定
         tate = False
@@ -93,7 +92,10 @@ class Zako(pg.sprite.Sprite):
     def __init__(self, y: int, speed: int, size: float = 0.5):
         super().__init__()
 
-        self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/zako1.png"), 0, 0.5)
+        self.num = random.randint(1,2)
+        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/zako{self.num}.png"), 0, 0.5)
+
+        #self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/zako1.png"), 0, 0.5)
 
         self.rect = self.image.get_rect()
         self.rect.center = (100, y)
@@ -138,19 +140,20 @@ class Beam(pg.sprite.Sprite):
     """
         魔王が出すビームに関するクラス
     """
-    def __init__(self, maou: Maou):
+    def __init__(self, maou: Maou, num:int):
         super().__init__()
-        self.image = pg.transform.rotozoom(pg.image.load("fig/beam.png"),0,0.5)
+
+        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/beam{num}.png"),0,0.5)
+        
         self.rect = self.image.get_rect()
         self.rect.left = maou.rect.left  
         self.rect.centery = maou.rect.centery
-        self.vx, self.vy = -10, 0
+        self.vx, self.vy = -20, 0
 
     def update(self): 
         self.rect.move_ip(self.vx, self.vy)
         if check_bound(self.rect) != (True, True):
             self.kill()
-        # screen.blit(self.img, self.rect)
 
 
 class HP:
@@ -169,20 +172,20 @@ class HP:
         self.image = self.font.render(f"HP: {self.HP}", 0, self.color)
         screen.blit(self.image, self.rect)
         
-
+        
 def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
 
     bg_img = pg.transform.rotozoom(pg.image.load("fig/back.png"), 0, 5)
     maou = Maou()
-    #zako = Zako() zakoがenemysになっていたら不要
     score = Score()
     level = Level()
     hp = HP()
     beams = pg.sprite.Group()
     enemys = pg.sprite.Group()
 
+    beamlevel = 1
     
     tmr = 0
     clock = pg.time.Clock()
@@ -192,12 +195,12 @@ def main():
                 return 0
 
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                beams.add(Beam(maou))
 
+                beams.add(Beam(maou,beamlevel))
       
-        for zakos in pg.sprite.groupcollide(enemys, beams, True, True).keys(): #zakoをenemysに変えたら、動くかも
-            score.score_up(10)  # 10点アップ
-        # for yuusya1 in pg.sprite.groupcollide(yuusya, beams, True, True).keys():
+        for zakos in pg.sprite.groupcollide(enemys, beams, True, True if beamlevel == 1 else False).keys(): #zakoをenemysに変えたら、動くかも
+            #score.score_up(10)  # 10点アップ
+        #for yuusya1 in pg.sprite.groupcollide(yuusya, beams, True, True).keys():
             #score.score_up(10)  # 100点アップ"
             if level.level <3: #上限は3レベル
                 if score.score > 100:
@@ -206,11 +209,10 @@ def main():
                     hp.HP += 100
                     if level.level == 3:
                         maou.change_img(2, screen)
-                        
+                        beamlevel = 2
         if hp.HP == 0:
             time.sleep(1)
             break
-
         screen.blit(bg_img, (0, 0))
         beams.update() 
         beams.draw(screen)
