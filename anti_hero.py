@@ -41,9 +41,10 @@ class Maou():
         """
         魔王の画像を第2形態に替える
         """
+
         self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/maou{num}.png"), 0, 0.8)
         screen.blit(self.image, self.rect)
-
+        
         
 class Score:
     """
@@ -54,7 +55,7 @@ class Score:
     def __init__(self):
         self.font = pg.font.Font(None, 50)
         self.color = (0,255,0)
-        self.score = 400
+        self.score = 0
         self.image =  self.font.render(f"Score: {self.score}", 0, self.color)
         self.rect = self.image.get_rect()
         self.rect.center = 100, HEIGHT-50
@@ -88,18 +89,52 @@ class Level:
         
         
 class Zako(pg.sprite.Sprite):
-    def __init__(self, y: int, speed: int):
+    def __init__(self, y: int, speed: int, size: float = 0.5):
         super().__init__()
+
         self.num = random.randint(1,2)
         self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/zako{self.num}.png"), 0, 0.5)
+
+        #self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/zako1.png"), 0, 0.5)
+
         self.rect = self.image.get_rect()
         self.rect.center = (100, y)
         self.speed = speed
+        self.atk = 10
 
-    def update(self):
+    def update(self, hp):
         self.rect.move_ip(self.speed, 0)
         if self.rect.right >= 1400:
             self.rect.right = 1400
+            if self.atk != 0:
+                hp.HP_Down(self.atk)
+                self.atk = 0
+            
+
+class Yuusya(Zako):
+    def __init__(self, y: int, speed: int, hp: int):
+        super().__init__(y, speed, 1)
+        self.hp = hp
+"""
+
+class Enemy(pg.sprite.Sprite):
+    def __init__(self, y: int, speed: int, hp: int, size: float, score: int):
+        super().__init__()
+        self.image = pg.transform.rotozoom(pg.image.load("fig/zako1.png"), 0, size)
+        self.rect = self.image.get_rect()
+        self.rect.center = (100, y)
+        self.speed = speed
+        self.hp = hp
+        self.score = score
+
+    def update(self, score: Score):
+        if self.hp <= 0:
+            self.kill()
+            score.score_up(self.score)
+        else:
+            self.rect.move_ip(self.speed, 0)
+            if self.rect.right >= 1200:
+                self.rect.right = 1200
 
 class Beam(pg.sprite.Sprite):
     """
@@ -107,7 +142,9 @@ class Beam(pg.sprite.Sprite):
     """
     def __init__(self, maou: Maou, num:int):
         super().__init__()
+
         self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/beam{num}.png"),0,0.5)
+        
         self.rect = self.image.get_rect()
         self.rect.left = maou.rect.left  
         self.rect.centery = maou.rect.centery
@@ -118,23 +155,36 @@ class Beam(pg.sprite.Sprite):
         if check_bound(self.rect) != (True, True):
             self.kill()
 
-    # def beam_change_img(self, num: int, screen: pg.Surface):
-    #     """
-    #     ビームを第2形態に替える
-    #     """
-    #     self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/beam{num}.png"), 0, 0.8)
-    #     screen.blit(self.image, self.rect)
- 
+
+class HP:
+    def __init__(self):
+        self.font = pg.font.Font(None, 50)
+        self.color = (255,255,0)
+        self.HP = 10
+        self.image =  self.font.render(f"HP: {self.HP}", 0, self.color)
+        self.rect = self.image.get_rect()
+        self.rect.center = 800, HEIGHT-50
+        
+    def HP_Down(self,down):
+        self.HP -= down
+        
+    def update(self, screen: pg.Surface):
+        self.image = self.font.render(f"HP: {self.HP}", 0, self.color)
+        screen.blit(self.image, self.rect)
+        
+        
 def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
 
-    bg_img = pg.transform.rotozoom(pg.image.load("ex05/fig/back.png"), 0, 5)
+    bg_img = pg.transform.rotozoom(pg.image.load("fig/back.png"), 0, 5)
     maou = Maou()
     score = Score()
     level = Level()
+    hp = HP()
     beams = pg.sprite.Group()
     enemys = pg.sprite.Group()
+
     beamlevel = 1
     
     tmr = 0
@@ -145,6 +195,7 @@ def main():
                 return 0
 
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+
                 beams.add(Beam(maou,beamlevel))
       
         for zakos in pg.sprite.groupcollide(enemys, beams, True, True if beamlevel == 1 else False).keys(): #zakoをenemysに変えたら、動くかも
@@ -155,22 +206,28 @@ def main():
                 if score.score > 100:
                     score.score -= 100
                     level.level_up(1)  # 1レベルアップ
+                    hp.HP += 100
                     if level.level == 3:
                         maou.change_img(2, screen)
                         beamlevel = 2
-        
+        if hp.HP == 0:
+            time.sleep(1)
+            break
         screen.blit(bg_img, (0, 0))
         beams.update() 
         beams.draw(screen)
         key_lst = pg.key.get_pressed()
         if tmr % 50 == 0:
-            enemys.add(Zako(random.randint(100, 800), random.randint(5, 15)))
+            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 1, 0.5, 10))
+        if tmr % 100 == 0:
+            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 10, 1, 100))
         maou.update(key_lst, screen)
-        enemys.update()
-        enemys.draw(screen)
 
+        enemys.update(hp)
+        enemys.draw(screen)
         score.update(screen)
         level.update(screen)
+        hp.update(screen)
         
         pg.display.update()
         tmr += 1
