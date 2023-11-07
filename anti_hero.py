@@ -193,6 +193,9 @@ def main():
         maou.update(key_lst, screen)
         enemys.update(score)
         enemys.draw(screen)
+        for enemy in enemys:
+            enemy_hp_img = pg.font.Font(None, 30).render(f"HP {enemy.hp}", True, (255, 0, 0))
+            screen.blit(enemy_hp_img, [(enemy.rect.left + enemy.rect.width / 2) - enemy_hp_img.get_width() / 2, enemy.rect.centery - enemy.rect.height / 2])
 
         score.update(screen)
         level.update(screen)
