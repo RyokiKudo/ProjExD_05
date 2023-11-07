@@ -32,11 +32,62 @@ class Maou():
             move_val += -1
         if key_list[pg.K_DOWN]:
             move_val += 1
+        if key_list[pg.K_b]: #ボム用のカラ処理
+            flg = 1
         self.rect.move_ip(0, move_val * 10)
         if not check_bound(self.rect)[1]:
             self.rect.move_ip(0 ,-move_val * 10)
         bg_obj.blit(self.image, self.rect)
-        
+    
+    def change_img(self, num: int, screen: pg.Surface):
+        """
+        魔王の画像を第2形態に替える
+        """
+        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/maou{num}.png"), 0, 0.8)
+        screen.blit(self.image, self.rect)        
+
+
+class Score:
+    """
+    倒した敵の数をスコアとして表示するクラス
+    ザコ:10点
+    勇者：500点
+    """
+    def __init__(self):
+        self.font = pg.font.Font(None, 50)
+        self.color = (0,255,0)
+        self.score = 400
+        self.image =  self.font.render(f"Score: {self.score}", 0, self.color)
+        self.rect = self.image.get_rect()
+        self.rect.center = 100, HEIGHT-50
+
+    def score_up(self, add):
+        self.score += add
+
+    def update(self, screen: pg.Surface):
+        self.image = self.font.render(f"Score: {self.score}", 0, self.color)
+        screen.blit(self.image, self.rect)
+
+
+class Level:
+    """
+    スコアに応じてレベルが変化するクラス
+    """
+    def __init__(self):
+        self.font = pg.font.Font(None, 50)
+        self.color = (255,255,0)
+        self.level = 1
+        self.image =  self.font.render(f"Level: {self.level}", 0, self.color)
+        self.rect = self.image.get_rect()
+        self.rect.center = WIDTH-200, HEIGHT-50
+    
+    def level_up(self, up):
+        self.level += up
+
+    def update(self, screen: pg.Surface):
+        self.image = self.font.render(f"Level: {self.level}", 0, self.color)
+        screen.blit(self.image, self.rect)
+
         
 class Beam(pg.sprite.Sprite):
     """
@@ -69,14 +120,15 @@ class Zako(pg.sprite.Sprite):
         if self.rect.right >= 1400:
             self.rect.right = 1400
 
-class Bomb():
-    def __init__(self):
+class Bomb(pg.sprite.Sprite):
+    def __init__(self, maou:Maou):
+        super().__init__()
         self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/explosion.gif"),0,0.5)
         self.rect = self.image.get_rect()
         self.rect.center = (1400,800)#画面の中心に爆発絵を出す
-    
+        
     def update(self):
-        self
+        self.rect.center()
         
 def main():
     pg.display.set_caption("アンチヒーロー")
@@ -85,7 +137,10 @@ def main():
     bg_img = pg.transform.rotozoom(pg.image.load("ex05/fig/back.png"), 0, 5)
     maou = Maou()
     beams = pg.sprite.Group()
-    enemys = pg.sprite.Group()
+    enemys = pg.sprite.Group() #zako
+    score = Score()
+    level = Level()
+    bomb = pg.sprite.Group()
     
     tmr = 0
     clock = pg.time.Clock()
@@ -95,6 +150,19 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(maou))
+            if event.type == pg.K_b:
+                bomb.add(Bomb(maou))
+        for zakos in pg.sprite.groupcollide(enemys, beams, True, True).keys(): #zakoをenemysに変えたら、動くかも
+            score.score_up(10)  # 10点アップ
+        #for yuusya1 in pg.sprite.groupcollide(yuusya, beams, True, True).keys():
+            #score.score_up(10)  # 100点アップ"
+        if level.level <3: #上限は3レベル
+            if score.score > 100:
+                score.score -= 100
+                level.level_up(1)  # 1レベルアップ
+                if level.level == 3:
+                    maou.change_img(2, screen)
+        
         screen.blit(bg_img, (0, 0))
         beams.update() 
         beams.draw(screen)
