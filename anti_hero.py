@@ -2,25 +2,21 @@ import math
 import random
 import sys
 import time
-
 import pygame as pg
 from pygame.sprite import AbstractGroup
-
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
 
-
-def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
-    
+def check_bound(obj: pg.Rect) -> tuple[bool, bool]: 
     yoko, tate = True, True
     if obj.left < 0 :  # 横方向のはみ出し判定
         yoko = False
     if obj.top < 0 or HEIGHT < obj.bottom:  # 縦方向のはみ出し 判定
         tate = False
     return yoko, tate
+    
 
-
-class Maou():
+class Maou(): #操作キャラクター魔王
     def __init__(self):
         self.image = pg.transform.rotozoom(pg.image.load("fig/maou1.png"), 0, 0.5)
         self.rect = self.image.get_rect()
@@ -41,7 +37,6 @@ class Maou():
         """
         魔王の画像を第2形態に替える
         """
-
         self.image = pg.transform.rotozoom(pg.image.load(f"fig/maou{num}.png"), 0, 0.8)
         screen.blit(self.image, self.rect)
         
@@ -87,17 +82,14 @@ class Level:
         self.image = self.font.render(f"Level: {self.level}", 0, self.color)
         screen.blit(self.image, self.rect)
 
-
-"""        
+        
 class Zako(pg.sprite.Sprite):
     def __init__(self, y: int, speed: int, size: float = 0.5):
         super().__init__()
 
         self.num = random.randint(1,2)
         self.image = pg.transform.rotozoom(pg.image.load(f"fig/zako{self.num}.png"), 0, 0.5)
-
         #self.image = pg.transform.rotozoom(pg.image.load("fig/zako1.png"), 0, 0.5)
-
         self.rect = self.image.get_rect()
         self.rect.center = (100, y)
         self.speed = speed
@@ -116,7 +108,7 @@ class Yuusya(Zako):
     def __init__(self, y: int, speed: int, hp: int):
         super().__init__(y, speed, 1)
         self.hp = hp
-"""
+
 
 class Enemy(pg.sprite.Sprite):
     def __init__(self, y: int, speed: int, hp: int, size: float, score: int):
@@ -141,15 +133,14 @@ class Enemy(pg.sprite.Sprite):
                     hp.HP_Down(self.atk)
                     self.atk = 0
 
+
 class Beam(pg.sprite.Sprite):
     """
         魔王が出すビームに関するクラス
     """
     def __init__(self, maou: Maou, num:int):
         super().__init__()
-
         self.image = pg.transform.rotozoom(pg.image.load(f"fig/beam{num}.png"),0,0.5)
-        
         self.rect = self.image.get_rect()
         self.rect.left = maou.rect.left  
         self.rect.centery = maou.rect.centery
@@ -181,7 +172,6 @@ class HP:
 def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-
     bg_img = pg.transform.rotozoom(pg.image.load("fig/back.png"), 0, 5)
     maou = Maou()
     score = Score()
@@ -189,20 +179,15 @@ def main():
     hp = HP()
     beams = pg.sprite.Group()
     enemys = pg.sprite.Group()
-
     beamlevel = 1
-    
     tmr = 0
     clock = pg.time.Clock()
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return 0
-
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-
                 beams.add(Beam(maou,beamlevel))
-      
         for enemy in pg.sprite.groupcollide(enemys, beams, False, True if beamlevel == 1 else False).keys():
             enemy.hp -= 1
             if level.level <3: #上限は3レベル
@@ -216,7 +201,6 @@ def main():
         if hp.HP == 0:
             time.sleep(1)
             break
-
         screen.blit(bg_img, (0, 0))
         beams.update() 
         beams.draw(screen)
@@ -226,17 +210,16 @@ def main():
         if tmr % 100 == 0:
             enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 10, 1, 100))
         maou.update(key_lst, screen)
-
         enemys.update(score, hp)
         enemys.draw(screen)
         score.update(screen)
         level.update(screen)
         hp.update(screen)
-        
         pg.display.update()
         tmr += 1
         clock.tick(50)
-        
+
+
 if __name__ == "__main__":
     pg.init()
     main()
