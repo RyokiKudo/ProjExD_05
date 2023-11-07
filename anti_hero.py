@@ -82,36 +82,14 @@ class Level:
         self.image = self.font.render(f"Level: {self.level}", 0, self.color)
         screen.blit(self.image, self.rect)
 
-        
-# class Zako(pg.sprite.Sprite):
-#     def __init__(self, y: int, speed: int, size: float = 0.5):
-#         super().__init__()
-#         self.num = random.randint(1,2)
-#         self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/zako{self.num}.png"), 0, 0.5)
-#         self.rect = self.image.get_rect()
-#         self.rect.center = (100, y)
-#         self.speed = speed
-#         self.atk = 10
-
-#     def update(self, hp):
-#         self.rect.move_ip(self.speed, 0)
-#         if self.rect.right >= 1400:
-#             self.rect.right = 1400
-#             if self.atk != 0:
-#                 hp.HP_Down(self.atk)
-#                 self.atk = 0
-            
-
-# class Yuusya(Zako):
-#     def __init__(self, y: int, speed: int, hp: int):
-#         super().__init__(y, speed, 1)
-#         self.hp = hp
-
 
 class Enemy(pg.sprite.Sprite):
+    """
+    ザコ敵が出てくるクラス
+    """
     def __init__(self, y: int, speed: int, hp: int, size: float, score: int):
         super().__init__()
-        self.num = random.randint(1,2)
+        self.num = random.randint(1,2) #ザコ敵をランダムに出現させるために使う
         self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/zako{self.num}.png"), 0, size)
         self.rect = self.image.get_rect()
         self.rect.center = (100, y)
@@ -205,9 +183,9 @@ def main():
         beams.draw(screen)
         key_lst = pg.key.get_pressed()
         if tmr % 50 == 0:
-            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 1, 0.5, 10))
+            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 1, 0.5, 10)) #ランダムで出現
         if tmr % 100 == 0:
-            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 10, 1, 100))
+            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 10, 1, 100)) #ランダムで出現
         maou.update(key_lst, screen)
         enemys.update(score, hp)
         enemys.draw(screen)
