@@ -15,14 +15,14 @@ def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
     yoko, tate = True, True
     if obj.left < 0 :  # 横方向のはみ出し判定
         yoko = False
-    if obj.top < 0 or HEIGHT < obj.bottom:  # 縦方向のはみ出し判定
+    if obj.top < 0 or HEIGHT < obj.bottom:  # 縦方向のはみ出し 判定
         tate = False
     return yoko, tate
 
 
 class Maou():
     def __init__(self):
-        self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/maou1.png"), 0, 0.5)
+        self.image = pg.transform.rotozoom(pg.image.load("fig/maou1.png"), 0, 0.5)
         self.rect = self.image.get_rect()
         self.rect.center = (1500, 450)
 
@@ -42,7 +42,7 @@ class Maou():
         魔王の画像を第2形態に替える
         """
 
-        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/maou{num}.png"), 0, 0.8)
+        self.image = pg.transform.rotozoom(pg.image.load(f"fig/maou{num}.png"), 0, 0.8)
         screen.blit(self.image, self.rect)
         
         
@@ -86,16 +86,17 @@ class Level:
     def update(self, screen: pg.Surface):
         self.image = self.font.render(f"Level: {self.level}", 0, self.color)
         screen.blit(self.image, self.rect)
-        
-        
+
+
+"""        
 class Zako(pg.sprite.Sprite):
     def __init__(self, y: int, speed: int, size: float = 0.5):
         super().__init__()
 
         self.num = random.randint(1,2)
-        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/zako{self.num}.png"), 0, 0.5)
+        self.image = pg.transform.rotozoom(pg.image.load(f"fig/zako{self.num}.png"), 0, 0.5)
 
-        #self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/zako1.png"), 0, 0.5)
+        #self.image = pg.transform.rotozoom(pg.image.load("fig/zako1.png"), 0, 0.5)
 
         self.rect = self.image.get_rect()
         self.rect.center = (100, y)
@@ -126,8 +127,9 @@ class Enemy(pg.sprite.Sprite):
         self.speed = speed
         self.hp = hp
         self.score = score
+        self.atk = 10
 
-    def update(self, score: Score):
+    def update(self, score: Score, hp):
         if self.hp <= 0:
             self.kill()
             score.score_up(self.score)
@@ -135,6 +137,9 @@ class Enemy(pg.sprite.Sprite):
             self.rect.move_ip(self.speed, 0)
             if self.rect.right >= 1200:
                 self.rect.right = 1200
+                if self.atk != 0:
+                    hp.HP_Down(self.atk)
+                    self.atk = 0
 
 class Beam(pg.sprite.Sprite):
     """
@@ -143,7 +148,7 @@ class Beam(pg.sprite.Sprite):
     def __init__(self, maou: Maou, num:int):
         super().__init__()
 
-        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/beam{num}.png"),0,0.5)
+        self.image = pg.transform.rotozoom(pg.image.load(f"fig/beam{num}.png"),0,0.5)
         
         self.rect = self.image.get_rect()
         self.rect.left = maou.rect.left  
@@ -160,7 +165,7 @@ class HP:
     def __init__(self):
         self.font = pg.font.Font(None, 50)
         self.color = (255,255,0)
-        self.HP = 10
+        self.HP = 100
         self.image =  self.font.render(f"HP: {self.HP}", 0, self.color)
         self.rect = self.image.get_rect()
         self.rect.center = 800, HEIGHT-50
@@ -198,10 +203,8 @@ def main():
 
                 beams.add(Beam(maou,beamlevel))
       
-        for zakos in pg.sprite.groupcollide(enemys, beams, True, True if beamlevel == 1 else False).keys(): #zakoをenemysに変えたら、動くかも
-            #score.score_up(10)  # 10点アップ
-        #for yuusya1 in pg.sprite.groupcollide(yuusya, beams, True, True).keys():
-            #score.score_up(10)  # 100点アップ"
+        for enemy in pg.sprite.groupcollide(enemys, beams, False, True if beamlevel == 1 else False).keys():
+            enemy.hp -= 1
             if level.level <3: #上限は3レベル
                 if score.score > 100:
                     score.score -= 100
@@ -213,6 +216,7 @@ def main():
         if hp.HP == 0:
             time.sleep(1)
             break
+
         screen.blit(bg_img, (0, 0))
         beams.update() 
         beams.draw(screen)
@@ -223,7 +227,7 @@ def main():
             enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 10, 1, 100))
         maou.update(key_lst, screen)
 
-        enemys.update(hp)
+        enemys.update(score, hp)
         enemys.draw(screen)
         score.update(screen)
         level.update(screen)
