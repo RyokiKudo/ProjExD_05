@@ -18,7 +18,7 @@ def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
 
 class Maou(): #操作キャラクター魔王
     def __init__(self):
-        self.image = pg.transform.rotozoom(pg.image.load("fig/maou1.png"), 0, 0.5)
+        self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/maou1.png"), 0, 0.5)
         self.rect = self.image.get_rect()
         self.rect.center = (1500, 450)
 
@@ -37,7 +37,7 @@ class Maou(): #操作キャラクター魔王
         """
         魔王の画像を第2形態に替える
         """
-        self.image = pg.transform.rotozoom(pg.image.load(f"fig/maou{num}.png"), 0, 0.8)
+        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/maou{num}.png"), 0, 0.8)
         screen.blit(self.image, self.rect)
         
         
@@ -83,37 +83,36 @@ class Level:
         screen.blit(self.image, self.rect)
 
         
-class Zako(pg.sprite.Sprite):
-    def __init__(self, y: int, speed: int, size: float = 0.5):
-        super().__init__()
+# class Zako(pg.sprite.Sprite):
+#     def __init__(self, y: int, speed: int, size: float = 0.5):
+#         super().__init__()
+#         self.num = random.randint(1,2)
+#         self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/zako{self.num}.png"), 0, 0.5)
+#         self.rect = self.image.get_rect()
+#         self.rect.center = (100, y)
+#         self.speed = speed
+#         self.atk = 10
 
-        self.num = random.randint(1,2)
-        self.image = pg.transform.rotozoom(pg.image.load(f"fig/zako{self.num}.png"), 0, 0.5)
-        #self.image = pg.transform.rotozoom(pg.image.load("fig/zako1.png"), 0, 0.5)
-        self.rect = self.image.get_rect()
-        self.rect.center = (100, y)
-        self.speed = speed
-        self.atk = 10
-
-    def update(self, hp):
-        self.rect.move_ip(self.speed, 0)
-        if self.rect.right >= 1400:
-            self.rect.right = 1400
-            if self.atk != 0:
-                hp.HP_Down(self.atk)
-                self.atk = 0
+#     def update(self, hp):
+#         self.rect.move_ip(self.speed, 0)
+#         if self.rect.right >= 1400:
+#             self.rect.right = 1400
+#             if self.atk != 0:
+#                 hp.HP_Down(self.atk)
+#                 self.atk = 0
             
 
-class Yuusya(Zako):
-    def __init__(self, y: int, speed: int, hp: int):
-        super().__init__(y, speed, 1)
-        self.hp = hp
+# class Yuusya(Zako):
+#     def __init__(self, y: int, speed: int, hp: int):
+#         super().__init__(y, speed, 1)
+#         self.hp = hp
 
 
 class Enemy(pg.sprite.Sprite):
     def __init__(self, y: int, speed: int, hp: int, size: float, score: int):
         super().__init__()
-        self.image = pg.transform.rotozoom(pg.image.load("fig/zako1.png"), 0, size)
+        self.num = random.randint(1,2)
+        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/zako{self.num}.png"), 0, size)
         self.rect = self.image.get_rect()
         self.rect.center = (100, y)
         self.speed = speed
@@ -140,7 +139,7 @@ class Beam(pg.sprite.Sprite):
     """
     def __init__(self, maou: Maou, num:int):
         super().__init__()
-        self.image = pg.transform.rotozoom(pg.image.load(f"fig/beam{num}.png"),0,0.5)
+        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/beam{num}.png"),0,0.5)
         self.rect = self.image.get_rect()
         self.rect.left = maou.rect.left  
         self.rect.centery = maou.rect.centery
@@ -172,7 +171,7 @@ class HP:
 def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    bg_img = pg.transform.rotozoom(pg.image.load("fig/back.png"), 0, 5)
+    bg_img = pg.transform.rotozoom(pg.image.load("ex05/fig/back.png"), 0, 5)
     maou = Maou()
     score = Score()
     level = Level()
