@@ -84,9 +84,12 @@ class Level:
 
 
 class Enemy(pg.sprite.Sprite):
+    """
+    ザコ敵が出てくるクラス
+    """
     def __init__(self, y: int, speed: int, hp: int, size: float, score: int):
         super().__init__()
-        self.num = random.randint(1,2)
+        self.num = random.randint(1,2) #ザコ敵をランダムに出現させるために使う
         self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/zako{self.num}.png"), 0, size)
         self.rect = self.image.get_rect()
         self.rect.center = (100, y)
@@ -180,9 +183,9 @@ def main():
         beams.draw(screen)
         key_lst = pg.key.get_pressed()
         if tmr % 50 == 0:
-            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 1, 0.5, 10))
+            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 1, 0.5, 10)) #ランダムで出現
         if tmr % 100 == 0:
-            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 10, 1, 100))
+            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 10, 1, 100)) #ランダムで出現
         maou.update(key_lst, screen)
         enemys.update(score, hp)
         enemys.draw(screen)
