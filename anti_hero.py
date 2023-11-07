@@ -72,7 +72,11 @@ class Zako(pg.sprite.Sprite):
 class Bomb():
     def __init__(self):
         self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/explosion.gif"),0,0.5)
-        #self.rect = self.image.
+        self.rect = self.image.get_rect()
+        self.rect.center = (1400,800)#画面の中心に爆発絵を出す
+    
+    def update(self):
+        self
         
 def main():
     pg.display.set_caption("アンチヒーロー")
