@@ -136,16 +136,16 @@ class Beam(pg.sprite.Sprite):
     """
     def __init__(self, maou: Maou, num:int):
         super().__init__()
-        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/beam{num}.png"),0,0.5)
+        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/beam{num}.png"),0,0.5)    #進化した際に画像を変更させるために指定できるようにしている
         self.rect = self.image.get_rect()
         self.rect.left = maou.rect.left  
         self.rect.centery = maou.rect.centery
-        self.vx, self.vy = -20, 0
+        self.vx, self.vy = -20, 0       #ビームの速度
 
     def update(self): 
         self.rect.move_ip(self.vx, self.vy)
         if check_bound(self.rect) != (True, True):
-            self.kill()
+            self.kill()    #画面端で消えるようにしている
 
 
 class HP:
@@ -182,7 +182,7 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return 0
-            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:    #シフトキーでビームが出るようにしている
                 beams.add(Beam(maou,beamlevel))
         for enemy in pg.sprite.groupcollide(enemys, beams, False, True if beamlevel == 1 else False).keys():    #敵とビームの衝突判定
             enemy.hp -= 1   #衝突した敵のHPを-1
@@ -191,9 +191,10 @@ def main():
                     score.score -= 100#スコアを100消費して
                     level.level_up(1)  # 1レベルアップ
                     hp.HP += 100
+
                     if level.level == 3:#レベル3になったら
                         maou.change_img(2, screen)#魔王の画像を替える
-                        beamlevel = 2
+                        beamlevel = 2　#魔王が進化したら、ビームも進化する
         if hp.HP == 0:
             time.sleep(1)
             break
