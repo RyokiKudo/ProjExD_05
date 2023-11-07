@@ -17,21 +17,31 @@ def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
     
 
 class Maou(): #操作キャラクター魔王
+    """
+    プレイアブルとなる魔王のクラス
+    """
     def __init__(self):
-        self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/maou1.png"), 0, 0.5)
-        self.rect = self.image.get_rect()
-        self.rect.center = (1500, 450)
+        """
+        イニシャライザの定義
+        """
+        self.image = pg.transform.rotozoom(pg.image.load("fig/maou1.png"), 0, 0.5)  #魔王の画像を縮小して格納
+        self.rect = self.image.get_rect()   #魔王の画像のrectを取得し格納
+        self.rect.center = (1500, 450)  #魔王の初期位置を指定
 
     def update(self, key_list, bg_obj: pg.Surface):
-        move_val = 0
-        if key_list[pg.K_UP]:
+        """
+        魔王の状態を更新する
+        移動の処理
+        """
+        move_val = 0    #移動量となる変数
+        if key_list[pg.K_UP]:   #上キーが押されていた場合、移動量を-1
             move_val += -1
-        if key_list[pg.K_DOWN]:
+        if key_list[pg.K_DOWN]: #下キーが押されていた場合、移動量を+1
             move_val += 1
-        self.rect.move_ip(0, move_val * 10)
-        if not check_bound(self.rect)[1]:
+        self.rect.move_ip(0, move_val * 10) #移動量*10だけ移動
+        if not check_bound(self.rect)[1]:   #上下の壁に接触した場合、移動をキャンセル
             self.rect.move_ip(0 ,-move_val * 10)
-        bg_obj.blit(self.image, self.rect)
+        bg_obj.blit(self.image, self.rect)  #魔王をblit
         
     def change_img(self, num: int, screen: pg.Surface):
         """
@@ -85,28 +95,36 @@ class Level:
 
 class Enemy(pg.sprite.Sprite):
     """
-    ザコ敵が出てくるクラス
+    敵キャラのクラス
     """
-    def __init__(self, y: int, speed: int, hp: int, size: float, score: int):
+    def __init__(self, y: int, speed: int, hp: int, size: float, score: int):   #敵の出現位置、移動速度、サイズ, 倒した際の取得スコアを引数として受け取る
+        """
+        イニシャライザ
+        """
         super().__init__()
         self.num = random.randint(1,2) #ザコ敵をランダムに出現させるために使う
-        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/zako{self.num}.png"), 0, size)
-        self.rect = self.image.get_rect()
-        self.rect.center = (100, y)
-        self.speed = speed
-        self.hp = hp
-        self.score = score
-        self.atk = 10
+        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/zako{self.num}.png"), 0, size)  #敵の画像のrectを取得し格納
+        self.rect = self.image.get_rect()   #画像のrectを取得
+        self.rect.center = (100, y) #敵の出現位置を決定
+        self.speed = speed  #敵の移動速度を格納
+        self.hp = hp    #敵の初期HPを設定
+        self.score = score  #取得スコアを格納
+        self.atk = 10   #攻撃力を設定
 
     def update(self, score: Score, hp):
-        if self.hp <= 0:
+        """
+        敵の状態を更新する
+        HP管理
+        移動
+        """
+        if self.hp <= 0:    #残りHPが0になったら削除し、スコアを追加
             self.kill()
             score.score_up(self.score)
         else:
-            self.rect.move_ip(self.speed, 0)
-            if self.rect.right >= 1200:
+            self.rect.move_ip(self.speed, 0)    #横方向へ移動
+            if self.rect.right >= 1200: #一定の位置へ移動したらその位置で移動を終了
                 self.rect.right = 1200
-                if self.atk != 0:
+                if self.atk != 0:   #攻撃力ぶんのダメージを1度だけ与える
                     hp.HP_Down(self.atk)
                     self.atk = 0
 
@@ -150,12 +168,12 @@ def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.transform.rotozoom(pg.image.load("ex05/fig/back.png"), 0, 5)
-    maou = Maou()
+    maou = Maou()   #魔王インスタンス
     score = Score()
     level = Level()
     hp = HP()
     beams = pg.sprite.Group()
-    enemys = pg.sprite.Group()
+    enemys = pg.sprite.Group()  #敵グループ
     beamlevel = 1
     tmr = 0
     clock = pg.time.Clock()
@@ -165,8 +183,8 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(maou,beamlevel))
-        for enemy in pg.sprite.groupcollide(enemys, beams, False, True if beamlevel == 1 else False).keys():
-            enemy.hp -= 1
+        for enemy in pg.sprite.groupcollide(enemys, beams, False, True if beamlevel == 1 else False).keys():    #敵とビームの衝突判定
+            enemy.hp -= 1   #衝突した敵のHPを-1
             if level.level <3: #上限は3レベル
                 if score.score > 100:
                     score.score -= 100
@@ -182,13 +200,13 @@ def main():
         beams.update() 
         beams.draw(screen)
         key_lst = pg.key.get_pressed()
-        if tmr % 50 == 0:
-            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 1, 0.5, 10)) #ランダムで出現
-        if tmr % 100 == 0:
-            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 10, 1, 100)) #ランダムで出現
-        maou.update(key_lst, screen)
-        enemys.update(score, hp)
-        enemys.draw(screen)
+        if tmr % 50 == 0:   #1秒ごとに雑魚敵を出現
+            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 1, 0.5, 10))  #ランダムで出現
+        if tmr % 100 == 0:  #2秒ごとに強敵を出現
+            enemys.add(Enemy(random.randint(100, 800), random.randint(5, 15), 10, 1, 100))  #ランダムで出現
+        maou.update(key_lst, screen)    #魔王の状態を更新
+        enemys.update(score, hp)    #敵の状態を更新
+        enemys.draw(screen) #敵の描画
         score.update(screen)
         level.update(screen)
         hp.update(screen)
