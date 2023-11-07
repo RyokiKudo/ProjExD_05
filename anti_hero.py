@@ -55,7 +55,7 @@ class Score:
     """
     倒した敵の数をスコアとして表示するクラス
     ザコ:10点
-    勇者：500点
+    勇者：100点
     """
     def __init__(self):
         self.font = pg.font.Font(None, 50)
@@ -76,11 +76,12 @@ class Score:
 class Level:
     """
     スコアに応じてレベルが変化するクラス
+    最高レベルは３
     """
     def __init__(self):
         self.font = pg.font.Font(None, 50)
         self.color = (255,255,0)
-        self.level = 1
+        self.level = 1 #レベルは1からスタート
         self.image =  self.font.render(f"Level: {self.level}", 0, self.color)
         self.rect = self.image.get_rect()
         self.rect.center = WIDTH-200, HEIGHT-50
@@ -186,12 +187,12 @@ def main():
         for enemy in pg.sprite.groupcollide(enemys, beams, False, True if beamlevel == 1 else False).keys():    #敵とビームの衝突判定
             enemy.hp -= 1   #衝突した敵のHPを-1
             if level.level <3: #上限は3レベル
-                if score.score > 100:
-                    score.score -= 100
+                if score.score > 100:#スコアが100を超えたら
+                    score.score -= 100#スコアを100消費して
                     level.level_up(1)  # 1レベルアップ
                     hp.HP += 100
-                    if level.level == 3:
-                        maou.change_img(2, screen)
+                    if level.level == 3:#レベル3になったら
+                        maou.change_img(2, screen)#魔王の画像を替える
                         beamlevel = 2
         if hp.HP == 0:
             time.sleep(1)
