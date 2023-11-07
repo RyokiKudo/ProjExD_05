@@ -82,31 +82,6 @@ class Level:
         self.image = self.font.render(f"Level: {self.level}", 0, self.color)
         screen.blit(self.image, self.rect)
 
-        
-# class Zako(pg.sprite.Sprite):
-#     def __init__(self, y: int, speed: int, size: float = 0.5):
-#         super().__init__()
-#         self.num = random.randint(1,2)
-#         self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/zako{self.num}.png"), 0, 0.5)
-#         self.rect = self.image.get_rect()
-#         self.rect.center = (100, y)
-#         self.speed = speed
-#         self.atk = 10
-
-#     def update(self, hp):
-#         self.rect.move_ip(self.speed, 0)
-#         if self.rect.right >= 1400:
-#             self.rect.right = 1400
-#             if self.atk != 0:
-#                 hp.HP_Down(self.atk)
-#                 self.atk = 0
-            
-
-# class Yuusya(Zako):
-#     def __init__(self, y: int, speed: int, hp: int):
-#         super().__init__(y, speed, 1)
-#         self.hp = hp
-
 
 class Enemy(pg.sprite.Sprite):
     def __init__(self, y: int, speed: int, hp: int, size: float, score: int):
