@@ -169,6 +169,8 @@ def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.transform.rotozoom(pg.image.load("ex05/fig/back.png"), 0, 5)
+    pg.mixer.music.load("ex05/bgm.mp3")
+    pg.mixer.music.play(-1)
     maou = Maou()   #魔王インスタンス
     score = Score()
     level = Level()
@@ -194,7 +196,7 @@ def main():
 
                     if level.level == 3:#レベル3になったら
                         maou.change_img(2, screen)#魔王の画像を替える
-                        beamlevel = 2　#魔王が進化したら、ビームも進化する
+                        beamlevel = 2#魔王が進化したら、ビームも進化する
         if hp.HP == 0: #HPがゼロになると画面が停止してブレイク(ゲームオーバー) 
             time.sleep(1)
             break
