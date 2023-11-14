@@ -196,7 +196,7 @@ def main():
 
                     if level.level == 3:#レベル3になったら
                         maou.change_img(2, screen)#魔王の画像を替える
-                        beamlevel = 2　#魔王が進化したら、ビームも進化する
+                        beamlevel = 2#魔王が進化したら、ビームも進化する
         if hp.HP == 0: #HPがゼロになると画面が停止してブレイク(ゲームオーバー) 
             time.sleep(1)
             break
