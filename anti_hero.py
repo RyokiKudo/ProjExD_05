@@ -169,6 +169,8 @@ def main():
     pg.display.set_caption("アンチヒーロー")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.transform.rotozoom(pg.image.load("ex05/fig/back.png"), 0, 5)
+    pg.mixer.music.load("bgm.mp3")
+    pg.mixer.music.play(-1)
     maou = Maou()   #魔王インスタンス
     score = Score()
     level = Level()
