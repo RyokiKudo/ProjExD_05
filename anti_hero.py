@@ -24,7 +24,7 @@ class Maou(): #操作キャラクター魔王
         """
         イニシャライザの定義
         """
-        self.image = pg.transform.rotozoom(pg.image.load("fig/maou1.png"), 0, 0.5)  #魔王の画像を縮小して格納
+        self.image = pg.transform.rotozoom(pg.image.load("ex05/fig/maou1.png"), 0, 0.5)  #魔王の画像を縮小して格納
         self.rect = self.image.get_rect()   #魔王の画像のrectを取得し格納
         self.rect.center = (1500, 450)  #魔王の初期位置を指定
 
