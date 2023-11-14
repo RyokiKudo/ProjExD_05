@@ -152,13 +152,13 @@ class HP:
     def __init__(self):
         self.font = pg.font.Font(None, 50)
         self.color = (255,255,0)
-        self.HP = 100
+        self.HP = 100 #HP100からスタート
         self.image =  self.font.render(f"HP: {self.HP}", 0, self.color)
         self.rect = self.image.get_rect()
         self.rect.center = 800, HEIGHT-50
         
     def HP_Down(self,down):
-        self.HP -= down
+        self.HP -= down #mainにてHP減少
         
     def update(self, screen: pg.Surface):
         self.image = self.font.render(f"HP: {self.HP}", 0, self.color)
@@ -190,12 +190,12 @@ def main():
                 if score.score > 100:#スコアが100を超えたら
                     score.score -= 100#スコアを100消費して
                     level.level_up(1)  # 1レベルアップ
-                    hp.HP += 100
+                    hp.HP += 100 #レベルアップでHP100追加
 
                     if level.level == 3:#レベル3になったら
                         maou.change_img(2, screen)#魔王の画像を替える
                         beamlevel = 2　#魔王が進化したら、ビームも進化する
-        if hp.HP == 0:
+        if hp.HP == 0: #HPがゼロになると画面が停止してブレイク(ゲームオーバー) 
             time.sleep(1)
             break
         screen.blit(bg_img, (0, 0))
